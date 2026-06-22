@@ -1,7 +1,7 @@
-from extract_text import extract_markdowns
-from clean_text import nettoyer
-from chunk_text import chunk_par_sections_markdown
-from vectorize import vectoriser
+from scripts.rag.create_docs.extract_text import extract_markdowns
+from scripts.rag.create_docs.clean_text import nettoyer
+from scripts.rag.create_docs.chunk_text import chunk_par_sections_markdown
+from scripts.rag.utils.vectorize import vectoriser
 import chromadb
 
 def nettoyer_corpus(corpus: list[dict]) -> list[dict]:

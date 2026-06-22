@@ -4,7 +4,7 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 import chromadb
-from query import dense_search
+from scripts.rag.scripts.query import dense_search
 
 # Initialize your vector database connection
 

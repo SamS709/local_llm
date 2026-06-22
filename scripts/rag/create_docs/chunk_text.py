@@ -1,5 +1,5 @@
 import re
-from extract_text import extract_markdowns, extract_rst
+from scripts.rag.create_docs.extract_text import extract_markdowns, extract_rst
 from docutils import nodes
 from docutils.parsers.rst import Parser
 from docutils.utils import new_document

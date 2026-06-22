@@ -1,4 +1,4 @@
-from vectorize import vectoriser
+from scripts.rag.utils.vectorize import vectoriser
 import chromadb
 import re
 from rank_bm25 import BM25Okapi
@@ -83,7 +83,7 @@ def rerank(question: str, candidats: list[str], k: int = 3) -> list[str]:
     classement = sorted(zip(candidats, scores), key=lambda c: c[1], reverse=True)
     return [texte for texte, _ in classement[:k]]
 
-def hybrid_search(collection, question, k=3, filtre=None, k_retrieval=10):
+def hybrid_search(collection, question, k=3, filtre=None, k_retrieval=10, rerank=False):
     """Combine recherche dense et BM25 via RRF."""
     dense_results = dense_search(collection, question, k=2*k_retrieval, filtre=filtre)
     bm25_results = bm25_search(collection, question, k=2*k_retrieval, filtre=filtre)
@@ -98,13 +98,15 @@ def hybrid_search(collection, question, k=3, filtre=None, k_retrieval=10):
 
     # Reranking final avec CrossEncoder
     top_texts = fusion
-    reranked_texts = rerank(question, top_texts, k=k)
-    
+    if rerank:
+        reranked_texts = rerank(question, top_texts, k=k)
+    else:
+        reranked_texts = top_texts[:k]  # list of texts, NOT resolved dicts
     return [lookup[texte] for texte in reranked_texts]
 
 
 if __name__ == "__main__":
-    path = "hugoVec"
+    path = "../db/hugoVec"
     client = chromadb.PersistentClient(path=path)
     collection = client.get_or_create_collection("docs")
 

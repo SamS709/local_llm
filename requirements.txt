@@ -1,0 +1,10 @@
+ollama
+mcp
+chromadb
+rank_bm25
+sentence-transformers
+trafilatura
+beautifulsoup4
+docutils
+requests
+
