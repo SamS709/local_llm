@@ -1,0 +1,71 @@
+name: Local Config
+version: 1.0.0
+schema: v1
+models:
+  - name: Qwen 3.6
+    apiBase: http://100.116.131.79:11434/
+    provider: ollama
+    # model: qwen_tuned2:latest
+    model: qwen3.6:35b
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use
+    contextLength: 32000
+    defaultCompletionOptions:
+      contextLength: 32000
+      temperature: 0.6
+      top_p: 0.95
+      top_k: 20
+      min_p: 0
+      think: false
+      raw: true
+  - name: Qwen2.5-Coder 1.5B
+    apiBase: http://100.116.131.79:11434/
+    provider: ollama
+    model: qwen2.5-coder:1.5b-base
+    roles:
+      - autocomplete
+  - name: Nomic Embed
+    apiBase: http://100.116.131.79:11434/
+    provider: ollama
+    model: nomic-embed-text:latest
+    roles:
+      - embed
+context:  
+  - provider: code  
+  - provider: docs  
+  - provider: diff  
+  - provider: terminal  
+  - provider: problems  
+  - provider: folder  
+  - provider: codebase
+mcpServers:
+  - name: optimized-rag
+    command: /home/sami/miniconda3/envs/torch/bin/python
+    args:
+      - /mnt/D/dev/archify/local_llm2/scripts/rag/scripts/srv/custom_mcp_rag.py
+  - name: context7
+    type: stdio
+    command: npx
+    args:
+      - -y
+      - "@upstash/context7-mcp"
+  - name: Browser search
+    command: npx
+    args:
+      - "-y"
+      - "mcp-remote"
+      - "https://mcp.tavily.com/mcp/?tavilyApiKey=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"
+rules:
+  - Answer as concisely and precisely as possible.
+  - "You must strictly follow this order of tool utilization:
+    1. ALWAYS call optimized_rag tools FIRST, before any other documentation tool, for every technical question — no exceptions, no pre-judgment of relevance.\n
+    2. Only after optimized_rag_search_codebase has been called and returned no useful results, you may call context7 tools. If optimized_rag_search_codebase made an error, retry at least 2 times before giving up. Once you get a result, iterate 2 more times with this tool to geet more results, then use context7 at least one time.\n
+    3. Only after both have failed, use browser_search tools.\n
+    Never call context7 or browser_search as your first action on a technical question. If you skip step 1, your answer is invalid."
+  - Always cite your source after retrieving information, using the filename, document title, or URL provided by the tool. Always prefer quoting the optimized_rag tools. If a claim is not backed by a retrieved source, do not cite one.
+  # - Stop talking if you need the result of a tool. The permission will be given only and only if you stop talking. So if you need a tol result, STOP TALKING !
+
