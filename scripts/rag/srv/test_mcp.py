@@ -20,15 +20,19 @@ Examples:
 """
 import asyncio
 import sys
-
+import os
 # Import directly from your server module. Adjust this if your file
 # isn't literally named server.py.
+if __name__=="__main__":
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
 from scripts.rag.srv.custom_mcp_rag import search_technical_docs, get_file_context, DB_PATHS
 
 
 
 async def main():
-    db = sys.argv[1] if len(sys.argv) > 1 else "hugoVec"
+    db = sys.argv[1] if len(sys.argv) > 1 else "isaaclabVec"
     query = sys.argv[2] if len(sys.argv) > 2 else "getting started"
     limit = int(sys.argv[3]) if len(sys.argv) > 3 else 3
 
@@ -56,3 +60,10 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+def test_mcp():
+    """Wrapper so that srv/__init__.py can import it."""
+    return asyncio.run(main())
+
+

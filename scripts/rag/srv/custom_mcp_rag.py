@@ -2,8 +2,16 @@
 from typing import Literal
 from mcp.server.fastmcp import FastMCP
 import chromadb
-from scripts.rag.scripts.query import hybrid_search
 import os
+import sys
+
+# Add parent directories to path so imports work regardless of cwd
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.abspath(os.path.join(_script_dir, "..", "..", ".."))
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
+from scripts.rag.scripts.query import hybrid_search
  
 # Available vector databases, mapped to their on-disk path and description.
 # Add new entries here as new doc sets get indexed.
@@ -27,7 +35,9 @@ def get_collection(db: DbName, http: str=False):
         raise ValueError(f"Unknown db '{db}'. Valid options: {list(DB_PATHS.keys())}")
     if db not in _collections:
         if not http:
-            client = chromadb.PersistentClient(path=os.path.join("../","db", "vec", DB_PATHS[db]["path"]))
+            # Use absolute path relative to this file's location
+            db_path = os.path.join(_script_dir, "../../../../db", "vec", DB_PATHS[db]["path"])
+            client = chromadb.PersistentClient(path=db_path)
         if http:
             client = chromadb.HttpClient(host="chroma.beast.c4c", port=80)
         _collections[db] = client.get_or_create_collection("docs")
@@ -91,4 +101,3 @@ async def get_file_context(filename: str, db: DbName) -> str:
  
 if __name__ == "__main__":
     app.run()
-

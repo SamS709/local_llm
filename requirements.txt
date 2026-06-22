@@ -7,4 +7,5 @@ trafilatura
 beautifulsoup4
 docutils
 requests
-
+'pydantic[email]'
+html2text
